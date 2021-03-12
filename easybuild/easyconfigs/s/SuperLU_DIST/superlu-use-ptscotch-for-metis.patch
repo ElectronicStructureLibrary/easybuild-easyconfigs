@@ -1,0 +1,14 @@
+--- SRC/get_perm_c_parmetis.c.orig	2021-03-12 20:25:19.304786000 +0000
++++ SRC/get_perm_c_parmetis.c	2021-03-12 20:25:54.659270000 +0000
+@@ -26,7 +26,10 @@ at the top-level directory.
+ #include <math.h>
+ #include "superlu_dist_config.h"
+ #ifdef HAVE_PARMETIS
+-#include "parmetis.h"
++#include <stdint.h>
++#include <stdio.h>
++#include "mpi.h"
++#include "ptscotch.h"
+ #endif
+ #include "superlu_ddefs.h"
+ 

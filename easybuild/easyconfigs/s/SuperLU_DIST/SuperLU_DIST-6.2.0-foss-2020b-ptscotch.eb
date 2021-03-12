@@ -1,0 +1,48 @@
+easyblock = "EB_SuperLU"
+
+name = 'SuperLU_DIST'
+version = '6.2.0'
+versionsuffix = '-ptscotch'
+
+homepage = 'https://crd-legacy.lbl.gov/~xiaoye/SuperLU/'
+description = """SuperLU is a general purpose library for the direct solution of large, sparse, nonsymmetric systems
+ of linear equations on high performance machines."""
+
+toolchain = {'name': 'foss', 'version': '2020b'}
+toolchainopts = {'pic': True, 'openmp': True}
+
+github_account = 'xiaoyeli'
+source_urls = [GITHUB_LOWER_SOURCE]
+sources = ["v%(version)s.tar.gz"]
+patches = ['superlu-use-ptscotch-for-metis.patch']
+checksums = [
+    '15ad1badd81b41e37941dd124d06d3b92e51c4f0ff532ad23fb09c4ebfe6eb9e',  # v6.2.0.tar.gz
+    'dfac6d53dae484d844448271d5d5390d2575cc87bc0dc0245511c5aa0ea67d64',  # superlu-use-ptscotch-for-metis.patch
+]
+
+builddependencies = [('CMake', '3.18.4')]
+
+dependencies = [
+    ('SCOTCH', '6.1.0'),
+]
+
+configopts = '-DTPL_PARMETIS_INCLUDE_DIRS="${EBROOTSCOTCH}/include" '
+configopts += '-DTPL_PARMETIS_LIBRARIES="${EBROOTSCOTCH}/lib/libptscotchparmetis.a;${EBROOTSCOTCH}/lib/libptscotch.a;'
+configopts += '${EBROOTSCOTCH}/lib/libscotchmetis.a;${EBROOTSCOTCH}/lib/libscotch.a;'
+configopts += '${EBROOTSCOTCH}/lib/libptscotcherr.a" '
+
+# Some tests run longer than default 1500s timeout on fairly big machine (36 cores).
+# Include only first four tests, which should be fairly small to run
+pretestopts = 'export ARGS="$ARGS --tests-regex pdtest_[21]x1_[13]_2_8_20_SP" && '
+
+postinstallcmds = [
+    "rm %(installdir)s/lib64/libsuperlu.a",  # remove broken symlink to libsuperlu.a
+    "ln -s %(installdir)s/lib64 %(installdir)s/lib",
+]
+
+sanity_check_paths = {
+    'files': ['lib64/libsuperlu_dist.a'],
+    'dirs': ['include']
+}
+
+moduleclass = 'numlib'
