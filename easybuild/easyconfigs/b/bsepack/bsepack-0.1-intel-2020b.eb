@@ -1,0 +1,33 @@
+easyblock = 'MakeCp'
+
+name = 'bsepack'
+version = '0.1'
+
+homepage = 'https://sites.google.com/a/lbl.gov/bsepack/'
+description = """
+  Bethe–Salpeter Eigenvalue Solver Package (BSEPACK) is a parallel 
+  ScaLAPACK-style library for solving the definite Bethe–Salpeter
+  eigenvalue problem of certain form
+  """
+
+toolchain = {'name': 'intel', 'version': '2020b'}
+toolchainopts = {'usempi': True, 'pic': True}
+
+source_urls = ['https://people.cs.umu.se/myshao/software/bsepack/']
+sources = ['bsepack-%(version)s.tar.gz']
+patches = ['bsepack-%(version)s-make.patch']
+checksums = [
+    'f4f9c6eb8670ae651ae10c9e7e07ac220b678a7ef54ba5839d2bcca1afe5622e',  # bsepack-0.1.tar.gz
+    '3d6e644eeda95d3f8d36c3b829acd8296b4ab462b8a1b1cbfdbc5b5a6fe65621',  # bsepack-0.1-make.patch
+]
+
+buildopts = 'LAPACKLIB="${LIBLAPACK}" SCALAPACKLIB="${LIBSCALAPACK}"'
+
+files_to_copy = [(['lib/libbsepack.a', 'lib/libsseig.a'], 'lib')]
+
+sanity_check_paths = {
+    'files': ['lib/libbsepack.a', 'lib/libsseig.a'],
+    'dirs': [],
+}
+
+moduleclass = 'phys'
