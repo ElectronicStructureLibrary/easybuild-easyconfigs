@@ -1,0 +1,73 @@
+easyblock = 'CMakeMake'
+
+name = 'DFTB+'
+version = '21.1'
+versionsuffix = '-Python-%(pyver)s'
+
+homepage = 'https://www.dftb-plus.info'
+description = """DFTB+ is a fast and efficient versatile quantum mechanical simulation package.
+It is based on the Density Functional Tight Binding (DFTB) method, containing
+almost all of the useful extensions which have been developed for the DFTB
+framework so far.  Using DFTB+ you can carry out quantum mechanical simulations
+like with ab-initio density functional theory based packages, but in an
+approximate way gaining typically around two order of magnitude in speed."""
+
+toolchain = {'name': 'foss', 'version': '2021a'}
+toolchainopts = {'usempi': False}
+
+local_external_dir = '%%(builddir)s/dftbplus-%%(version)s/external/%s/origin/'
+local_external_extract = 'mkdir -p %s && tar -C %s' % (local_external_dir, local_external_dir)
+local_external_extract += ' --strip-components=1 -xzf %%s'
+
+sources = [
+    {
+        # DFTB+ source code
+        'source_urls': ['https://github.com/dftbplus/dftbplus/archive'],
+        'download_filename': '%(version)s.tar.gz',
+        'filename': SOURCE_TAR_GZ,
+    },
+    {
+        # Slater-Koster (slakos) data for testing
+        'source_urls': ['https://github.com/dftbplus/testparams/archive'],
+        'download_filename': 'd0ea16df2b56d14c7c3dc9329a8d3bac9fea50a0.tar.gz',
+        'filename': 'slakos-data-%(version)s.tar.gz',
+        'extract_cmd': local_external_extract % ('slakos', 'slakos'),
+    },
+]
+
+dependencies = [
+    ('CMake', '3.20.1'),
+    ('Python', '3.9.5'),
+    ('SciPy-bundle', '2021.05'),
+    ('arpack-ng', '3.8.0'),
+    ('libmbd', '0.10.4'),
+    ('PLUMED', '2.7.1'),
+    ('dftd3-lib', '0.9'),
+]
+
+configopts = '-DWITH_ARPACK=TRUE'
+configopts += '-DWITH_API=TRUE'
+configopts += '-DWITH_MPD=TRUE'
+configopts += '-DWITH_PLUMED=TRUE'
+configopts += '-DBUILD_SHARED_LIBS=TRUE'
+configopts += '-DWITH_MPI=TRUE'
+configopts += '-DWITH_DFTD3=TRUE'
+
+
+buildopts = ''
+
+runtest = '-j'
+
+installopts = 'INSTALLDIR="%(installdir)s"'
+
+sanity_check_paths = {
+    'files': ['bin/' + x for x in ['dftb+', 'dp_bands', 'dp_dos', 'gen2cif', 'gen2xyz', 'makecube',
+                                   'modes', 'repeatgen', 'straingen', 'waveplot', 'xyz2gen']],
+    'dirs': ['lib/python%(pyshortver)s/site-packages']
+}
+
+sanity_check_commands = [('python', '-c "import dptools"')]
+
+modextrapaths = {'PYTHONPATH': 'lib/python%(pyshortver)s/site-packages'}
+
+moduleclass = 'phys'
