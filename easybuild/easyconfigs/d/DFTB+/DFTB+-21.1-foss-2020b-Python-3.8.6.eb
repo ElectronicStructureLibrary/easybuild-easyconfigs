@@ -41,7 +41,7 @@ dependencies = [
     ('SciPy-bundle', '2020.11'),
     ('arpack-ng', '3.8.0'),
     ('libmbd', '0.10.4'),
-    ('PLUMED', '2.7.0'),
+    ('PLUMED', '2.6.2'),
     ('dftd3-lib', '0.9'),
 ]
 
